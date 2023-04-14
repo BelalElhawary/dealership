@@ -1,2 +1,3 @@
-# dealership
-dealership backend example
+# Car Dealership
+## Build the executable
+**Build on windows**

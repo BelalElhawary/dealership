@@ -1,0 +1,1 @@
+gcc -o window main.c
