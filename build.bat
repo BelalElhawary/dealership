@@ -1,1 +1,1 @@
-gcc -o window main.c
+gcc -o window.exe main.c

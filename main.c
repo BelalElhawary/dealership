@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 // define clear console based on platform
 void clear_console()
@@ -12,7 +13,18 @@ void clear_console()
 	#endif
 }
 
-
+// grap char array input from console based on platform
+char *take_char_ptr_input()
+{
+	char *input = malloc(sizeof(char) * ( 24 + 1 ) );
+	#ifdef _WIN32
+	scanf("%s", &input);
+    return input;
+	#elif __linux__
+	scanf("%s", input);
+	return input;
+	#endif
+}
 
 
 // Car information data holder
@@ -70,36 +82,36 @@ struct Car
 {
 	char *Model;
 	char *Manufacturer;
-	_Bool isColorUpgraded;
+	bool isColorUpgraded;
 	char Color;
 	int Mileage;
 	int price;
-	_Bool isTransmissionUpgraded;
+	bool isTransmissionUpgraded;
 	enum TransmissionType Transmission;
 	struct EngineData *Engine;
 	struct ChassisData *Chassis;
 	struct ExteriorData *Exterior;
 	struct SteatingAndTrimData *SeatingAndTrim;
-	_Bool Airbags;
+	bool Airbags;
 	int AirbagsCount;
 	struct FuelEconomyData *FuelEconomy;
-	_Bool Hybrid;
-	_Bool FullyElectrified;
-	_Bool isAutomaticParkingAssistanceUpgraded;
-	_Bool AutomaticParkingAssistance;
-	_Bool NightVisionAssistance;
-	_Bool isCruiseControl;
-	_Bool CruiseControl;
+	bool Hybrid;
+	bool FullyElectrified;
+	bool isAutomaticParkingAssistanceUpgraded;
+	bool AutomaticParkingAssistance;
+	bool NightVisionAssistance;
+	bool isCruiseControl;
+	bool CruiseControl;
 	enum DrivingSystemType DrivingSystem;
-	_Bool HillAssist;
-	_Bool isTirePressureMonitoringSystemUpgreded;
-	_Bool TirePressureMonitoringSystem;
-	_Bool VoiceCommand;
-	_Bool LaneChangeIndicator;
-	_Bool ForwardCollisionWarningSensor;
-	_Bool BlindSpotWarningSensors;
-	_Bool SeatHeater;
-	_Bool SteeringHeater;
+	bool HillAssist;
+	bool isTirePressureMonitoringSystemUpgreded;
+	bool TirePressureMonitoringSystem;
+	bool VoiceCommand;
+	bool LaneChangeIndicator;
+	bool ForwardCollisionWarningSensor;
+	bool BlindSpotWarningSensors;
+	bool SeatHeater;
+	bool SteeringHeater;
 	enum ConditionType Condition;
 	char *countries[5];
 };
@@ -273,9 +285,9 @@ void search_for_car()
 
 	printf("Search for car\n");
 	printf("--------------------------------\n");
-	char input[10];
 	printf("Enter car model: ");
-	scanf("%s", input);
+	char *input = take_char_ptr_input();
+	//scanf("%s", input);
 
 	for (int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
 	{
@@ -365,9 +377,11 @@ void add_car()
 
 	printf("Enter car model\n");
 	printf("--------------------------------\n");
-	char input[24];
 	printf("Your input: ");
-	scanf("%s", input);
+	char *input = take_char_ptr_input();
+	//scanf("%s", input);
+
+
 	struct Branch *branch = dealershipPtr->Branches[branch_index];
 	struct Car *car = branch->cars[car_index];
 
