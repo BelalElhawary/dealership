@@ -220,24 +220,30 @@ int peso = 18.01;
 int canadianDollar = 1.35;
 int balboa = 1;
 int colon = 533.81;
+float currentCurrency = 1;
 
 /*
 	Convert the program currency usd to branches currency
 */
-float convert_price(int usd, enum Currency currency)
+void convert_price(enum Currency currency)
 {
 	switch (currency)
 	{
 	case 0:
-		return usd * peso;
+		currentCurrency = peso;
+		break;
 	case 1:
-		return usd * canadianDollar;
+		currentCurrency = canadianDollar;
+		break;
 	case 2:
-		return usd * balboa;
+		currentCurrency = balboa;
+		break;
 	case 3:
-		return usd * colon;
+		currentCurrency = colon;
+		break;
 	default:
-		return usd;
+		currentCurrency = 1;
+		break;
 	}
 }
 
@@ -525,6 +531,8 @@ void print_branch_cars()
 	scanf("%d", &input);
 }
 
+
+// print branch data
 void print_branches()
 {
 	clear_console();
@@ -574,7 +582,6 @@ void add_car()
 	char *input = malloc(sizeof(char) * (24 + 1));
 	scanf("%s", input);
 #endif
-	// scanf("%s", input);
 
 	struct Branch *branch = dealershipPtr->Branches[branch_index];
 	struct Car *car = branch->cars[car_index];
@@ -593,6 +600,10 @@ void add_car()
 	// scanf("%s", &input);
 }
 
+
+/*
+	Change car model name in selected branch and slot
+*/
 void change_car()
 {
 	clear_console();
@@ -663,16 +674,20 @@ void change_car()
 }
 
 // Backend calls
+
+// Add car to selected branch
 void call_add_car(int slot, int branch, struct Car *car)
 {
 	dealershipPtr->Branches[branch]->cars[slot] = car;
 }
 
+// Remove car from selected branch
 void call_remove_car(int slot, int branch, struct Car *car)
 {
 	dealershipPtr->Branches[branch]->cars[slot] = NULL;
 }
 
+// back end to update inventory once use buy a car and update sales
 void call_sell_car(int slot, int branch)
 {
 	struct Car *car = dealershipPtr->Branches[branch]->cars[slot];
@@ -680,11 +695,14 @@ void call_sell_car(int slot, int branch)
 
 	if (strcmp(car->Manufacturer, "honda") == 0 && strcmp(branchRef->name, "Canada - Ottawa") == 0)
 	{
-		dealershipPtr->Sales += car->price * 0.98f;
+		dealershipPtr->Sales += car->price * 0.98f * currentCurrency;
 	}
 	else if (strcmp(car->Manufacturer, "volvo") == 0 && strcmp(branchRef->name, "Mexico - Mexico City") == 0 && car->price > 60000)
 	{
-		dealershipPtr->Sales += car->price * 0.97f;
+		dealershipPtr->Sales += car->price * 0.97f * currentCurrency;
+	}else
+	{
+		dealershipPtr->Sales += car->price * 0.97f * currentCurrency;
 	}
 
 	dealershipPtr->Branches[branch]->cars[slot] = NULL;
@@ -698,6 +716,7 @@ bool inRange(int price, int mileage, struct SearchModel *search)
 // Search for the car based on use input
 struct SearchResult *call_search_car(struct SearchModel *search)
 {
+	// search result counter and data holder
 	int resultCount = 0;
 	struct SearchResult *result = malloc(sizeof(struct SearchResult));
 
@@ -735,13 +754,12 @@ struct SearchResult *call_search_car(struct SearchModel *search)
 	Transfare car from branch to another
 	add transfer expenses to the sales
 */
-
 void call_transfare_car(int slot, int branch, int to_slot, int to_branch)
 {
 	struct Car *car = dealershipPtr->Branches[branch]->cars[slot];
 	dealershipPtr->Branches[branch]->cars[slot] = NULL;
 	dealershipPtr->Branches[to_branch]->cars[to_slot] = car;
-	dealershipPtr->Sales -= 1000;
+	dealershipPtr->Sales -= 1000 * currentCurrency;
 }
 
 // main menu
