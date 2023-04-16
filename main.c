@@ -607,7 +607,7 @@ void add_car()
 void change_car()
 {
 	clear_console();
-	printf("Pick branch");
+	printf("Pick branch\n");
 	printf("--------------------------------\n");
 	for (int i = 0; i < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); i++)
 	{
