@@ -186,7 +186,7 @@ struct Branch
 struct Dealership
 {
 	char *name;
-	struct Branch *Branches[3];
+	struct Branch *Branches[5];
 	int Sales;
 };
 
@@ -624,7 +624,7 @@ void change_car()
 	printf("Your input: ");
 	scanf("%d", &input);
 
-	if (input >= 1 && input <= 3)
+	if (input >= 1 && input <= 5)
 		branch_index = input - 1;
 
 	clear_console();
