@@ -1,6 +1,8 @@
+#define _GNU_SOURCE
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <ctype.h>
 #include <stdbool.h>
 
 // define clear console based on platform
@@ -88,7 +90,6 @@ struct FuelEconomyData
 {
 	char *name;
 };
-
 
 /*
 	struct to hold car data
@@ -395,7 +396,6 @@ struct Branch *create_panama_branch()
 	// Allocate memory for branch
 	create_branch_car_list(branch);
 
-
 	// Set branch data
 	branch->name = "Panama - Panama City";
 	branch->Address = "Vía Ricardo J. Alfaro, Panamá, Panama";
@@ -452,13 +452,21 @@ void search_for_car()
 	printf("--------------------------------\n");
 	printf("Enter car model: ");
 
-#ifdef _WIN32
+	// Get user input string
+	fflush(stdin);
 	char input[24];
-	scanf("%s", input);
-#elif __linux__
-	char *input = malloc(sizeof(char) * (24 + 1));
-	scanf("%s", input);
-#endif
+	fgets(input, 24, stdin);
+	size_t ln = strlen(input) - 1;
+	if (input[ln] == '\n')
+	{
+		input[ln] = '\0';
+	}
+
+	// Convert input string to lowercase
+	for (int i = 0; i < strlen(input); i++)
+	{
+		input[i] = tolower(input[i]);
+	}
 
 	for (int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
 	{
@@ -471,7 +479,7 @@ void search_for_car()
 				struct Car *car = branch->cars[i];
 				if (car != NULL)
 				{
-					if (strcmp(car->Model, input) == 0)
+					if (strstr(car->Model, input) != NULL)
 						printf(" - Car Model: %s \n", car->Model);
 				}
 			}
@@ -482,6 +490,8 @@ void search_for_car()
 	printf("0) Back\n");
 	int action;
 	scanf("%d", &action);
+
+	// free(input);
 }
 
 void print_branch_cars()
@@ -531,7 +541,6 @@ void print_branch_cars()
 	scanf("%d", &input);
 }
 
-
 // print branch data
 void print_branches()
 {
@@ -575,13 +584,14 @@ void add_car()
 	printf("--------------------------------\n");
 	printf("Your input: ");
 
-#ifdef _WIN32
+	fflush(stdin);
 	char input[24];
-	scanf("%s", input);
-#elif __linux__
-	char *input = malloc(sizeof(char) * (24 + 1));
-	scanf("%s", input);
-#endif
+	fgets(input, 24, stdin);
+	size_t ln = strlen(input) - 1;
+	if (input[ln] == '\n')
+	{
+		input[ln] = '\0';
+	}
 
 	struct Branch *branch = dealershipPtr->Branches[branch_index];
 	struct Car *car = branch->cars[car_index];
@@ -599,7 +609,6 @@ void add_car()
 
 	// scanf("%s", &input);
 }
-
 
 /*
 	Change car model name in selected branch and slot
@@ -700,7 +709,8 @@ void call_sell_car(int slot, int branch)
 	else if (strcmp(car->Manufacturer, "volvo") == 0 && strcmp(branchRef->name, "Mexico - Mexico City") == 0 && car->price > 60000)
 	{
 		dealershipPtr->Sales += car->price * 0.97f * currentCurrency;
-	}else
+	}
+	else
 	{
 		dealershipPtr->Sales += car->price * 0.97f * currentCurrency;
 	}
