@@ -18,83 +18,83 @@ void clear_console()
 // Car information data holder
 
 // enum to spicify wich type of currency (supported by program)
-enum Currency
+typedef enum
 {
 	Peso,
 	CanadianDollar,
 	Balboa,
 	Colon
-};
+} Currency;
 
 // enum to spicify wich type of transmission the car use
-enum TransmissionType
+typedef enum
 {
 	Manual,
 	Automatic,
-};
+} TransmissionType;
 
 // enum to spicify wich type of driving system the car use
-enum DrivingSystemType
+typedef enum
 {
 	TwoWheelDrive,
 	FourWheelDrive
-};
+} DrivingSystemType;
 
 // enum to spicify wich type of driving system the car use
-enum ConditionType
+typedef enum
 {
 	BrandNew,
 	Used,
 	Both
-};
+} ConditionType;
 
 // struct to hold search for car result contains 5 cars in array of struct Car
-struct SearchResult
+typedef struct
 {
-	struct Car *car[5];
-};
+	Car *car[5];
+} SearchResult;
 
 // struct to hold Engine data
-struct EngineData
+typedef struct
 {
 	char *name;
-};
+} EngineData;
 
 // struct to hold Chassis data
 
-struct ChassisData
+typedef struct
 {
 	char *name;
-};
+} ChassisData;
 
 // struct to hold Exterior data
-struct ExteriorData
+typedef struct
 {
 	char *name;
-};
+} ExteriorData;
 
 // struct to hold Steating data
-struct SteatingAndTrimData
+typedef struct
 {
 	char *name;
-};
+} SteatingAndTrimData;
 
 // struct to hold Dimension data
-struct DimensionData
+typedef struct
 {
 	float width, height, length;
-};
+} DimensionData;
 
 // struct to hold FuelEconomy data
-struct FuelEconomyData
+typedef struct
 {
 	char *name;
-};
+} FuelEconomyData;
 
 /*
 	struct to hold car data
 */
-struct Car
+typedef struct
 {
 	char *Model;
 	char *Manufacturer;
@@ -130,12 +130,12 @@ struct Car
 	bool SteeringHeater;
 	enum ConditionType Condition;
 	char *countries[5];
-};
+} Car;
 
 /*
 	struct to hold FinanceManager data
 */
-struct FinanceManagerData
+typedef struct
 {
 	char *FirstName, LastName;
 	unsigned int PhoneNumber;
@@ -143,12 +143,12 @@ struct FinanceManagerData
 	char *Address;
 	char *DateOfEmployment;
 	unsigned int YearsOfExperience;
-};
+} FinanceManagerData;
 
 /*
 	struct to hold GeneralManager data
 */
-struct GeneralManagerData
+typedef struct
 {
 
 	unsigned int PhoneNumber;
@@ -157,12 +157,12 @@ struct GeneralManagerData
 	char *Email;
 	char *DateOfEmployment;
 	unsigned int YearsOfExperience;
-};
+} GeneralManagerData;
 
 /*
 	struct to hold Branch data
 */
-struct Branch
+typedef struct
 {
 	// public information
 	char *name;
@@ -172,49 +172,49 @@ struct Branch
 	char *FaxNumber;
 	char *CustomerServiceEmail;
 	char *NameOfTheGeneralManager;
-	struct Car *cars[10];
+	Car *cars[10];
 
 	// confidential information
-	struct GeneralManagerData *GeneralManager;
-	struct FinaceManagerData *FinaceManager;
+	GeneralManagerData *GeneralManager;
+	FinanceManagerData *FinaceManager;
 	unsigned int AvailableCars;
 	char *AvailableCarsInformation;
-};
+} Branch;
 
 /*
 	struct to hold Dealership data
 */
-struct Dealership
+typedef struct
 {
 	char *name;
-	struct Branch *Branches[5];
+	Branch *Branches[5];
 	unsigned int Sales;
-};
+} Dealership;
 
 /*
 	struct to hold two vector data like min and max of value or x or y for position data type
 */
-struct Vector2
+typedef struct
 {
 	unsigned int min, max;
-};
+} Vector2;
 
 /*
 	struct to hold Search data
 */
-struct SearchModel
+typedef struct
 {
 	char *CarModel;
 	char *CarManufacturer;
 	enum ConditionType CarCondition;
-	struct Vector2 *RangeOfMileage;
-	struct Vector2 *PriceRange;
+	Vector2 *RangeOfMileage;
+	Vector2 *PriceRange;
 	char *Color;
-};
+} SearchModel;
 
-struct SearchModel *search;
-struct Dealership dealership;
-struct Dealership *dealershipPtr = &dealership;
+SearchModel *search;
+Dealership dealership;
+Dealership *dealershipPtr = &dealership;
 unsigned int branch_index;
 unsigned int car_index;
 unsigned int peso = 18.01;
@@ -270,7 +270,7 @@ unsigned int compare_string(char *first, char *second)
 /*
 	Setbranch car list to null
 */
-void create_branch_car_list(struct Branch *branch)
+void create_branch_car_list(Branch *branch)
 {
 	branch->cars[0] = NULL;
 	branch->cars[1] = NULL;
@@ -287,9 +287,9 @@ void create_branch_car_list(struct Branch *branch)
 /*
 	Allocate memory for car struct and initialize it with the given args
 */
-struct Car *create_car(char *model, char *manufacturer, char *color, unsigned int price, enum TransmissionType transmission, enum ConditionType condition)
+Car *create_car(char *model, char *manufacturer, char *color, unsigned int price, TransmissionType transmission, ConditionType condition)
 {
-	struct Car *car = malloc(sizeof(struct Car));
+	Car *car = malloc(sizeof(Car));
 	car->Model = model;
 	car->Color = color;
 	car->Manufacturer = manufacturer;
@@ -302,9 +302,9 @@ struct Car *create_car(char *model, char *manufacturer, char *color, unsigned in
 /*
 	Initialize branch data for Usa Washington
 */
-struct Branch *create_usa_branch()
+Branch *create_usa_branch()
 {
-	struct Branch *branch = malloc(sizeof(struct Branch));
+	Branch *branch = malloc(sizeof(Branch));
 
 	// Allocate memory for branch
 	create_branch_car_list(branch);
@@ -331,9 +331,9 @@ struct Branch *create_usa_branch()
 /*
 	Initialize branch data for Canada Ottawa
 */
-struct Branch *create_canada_branch()
+Branch *create_canada_branch()
 {
-	struct Branch *branch = malloc(sizeof(struct Branch));
+	Branch *branch = malloc(sizeof(Branch));
 
 	// Allocate memory for branch
 	create_branch_car_list(branch);
@@ -360,9 +360,9 @@ struct Branch *create_canada_branch()
 /*
 	Initialize branch data for Mexico Mexico City
 */
-struct Branch *create_mexico_branch()
+Branch *create_mexico_branch()
 {
-	struct Branch *branch = malloc(sizeof(struct Branch));
+	Branch *branch = malloc(sizeof(Branch));
 
 	// Allocate memory for branch
 	create_branch_car_list(branch);
@@ -389,9 +389,9 @@ struct Branch *create_mexico_branch()
 /*
 	Initialize branch data for Panama Panama City
 */
-struct Branch *create_panama_branch()
+Branch *create_panama_branch()
 {
-	struct Branch *branch = malloc(sizeof(struct Branch));
+	Branch *branch = malloc(sizeof(Branch));
 
 	// Allocate memory for branch
 	create_branch_car_list(branch);
@@ -418,9 +418,9 @@ struct Branch *create_panama_branch()
 /*
 	Initialize branch data for Costa Rica San José
 */
-struct Branch *create_costa_rica_branch()
+Branch *create_costa_rica_branch()
 {
-	struct Branch *branch = malloc(sizeof(struct Branch));
+	Branch *branch = malloc(sizeof(Branch));
 
 	// Allocate memory for branch
 	create_branch_car_list(branch);
@@ -444,24 +444,24 @@ struct Branch *create_costa_rica_branch()
 	return branch;
 }
 
-bool inRange(unsigned int price, unsigned int mileage, struct SearchModel *search)
+bool inRange(unsigned int price, unsigned int mileage, SearchModel *search)
 {
 	return price > search->PriceRange->min && price < search->PriceRange->max || mileage > search->RangeOfMileage->min && mileage < search->RangeOfMileage->max;
 }
 
 // Search for the car based on use input
-struct SearchResult *call_search_car(struct SearchModel *search)
+SearchResult *call_search_car(SearchModel *search)
 {
 	// search result counter and data holder
 	unsigned int resultCount = 0;
-	struct SearchResult *result = malloc(sizeof(struct SearchResult));
+	SearchResult *result = malloc(sizeof(SearchResult));
 
 	for (unsigned int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
 	{
 		if (resultCount > 4)
 			break;
 
-		struct Branch *branch = dealershipPtr->Branches[l];
+		Branch *branch = dealershipPtr->Branches[l];
 		if (branch != NULL)
 		{
 			printf("\nCar matches in branch %s \n", branch->name);
@@ -470,14 +470,16 @@ struct SearchResult *call_search_car(struct SearchModel *search)
 				if (resultCount > 4)
 					break;
 
-				struct Car *car = branch->cars[i];
+				Car *car = branch->cars[i];
 				if (car != NULL)
 				{
 					if (strstr(car->Model, search->CarModel) != NULL || strcmp(car->Manufacturer, search->CarManufacturer) == 0 || car->Condition == search->CarCondition || inRange(car->price, car->Mileage, search))
 					{
 						result->car[resultCount] = car;
 						resultCount++;
-					}else{
+					}
+					else
+					{
 						result->car[resultCount] = NULL;
 					}
 				}
@@ -488,7 +490,7 @@ struct SearchResult *call_search_car(struct SearchModel *search)
 	return result;
 }
 
-void print_search_result(struct SearchResult *result)
+void print_search_result(SearchResult *result)
 {
 	clear_console();
 
@@ -497,7 +499,7 @@ void print_search_result(struct SearchResult *result)
 
 	for (unsigned int l = 0; l < sizeof(result->car) / sizeof(result->car[0]); l++)
 	{
-		if(result->car != NULL)
+		if (result->car != NULL)
 		{
 			printf("Model: %s\n", result->car[l]->Model);
 			printf("Manufacturer: %s\n", result->car[l]->Manufacturer);
@@ -515,7 +517,7 @@ void search_for_car()
 {
 	clear_console();
 
-	struct SearchModel *search = malloc(sizeof(struct SearchModel));
+	SearchModel *search = malloc(sizeof(SearchModel));
 
 	printf("Search for car\n");
 	printf("--------------------------------\n");
@@ -535,7 +537,6 @@ void search_for_car()
 		input[i] = tolower(input[i]);
 	}
 	search->CarModel = input;
-
 
 	printf("\nEnter car manufacturer: ");
 	// Get user input string
@@ -558,7 +559,7 @@ void search_for_car()
 	fflush(stdin);
 	unsigned int min, max;
 	scanf("%d %d", &min, &max);
-	struct Vector2 *price = malloc(sizeof(struct Vector2));
+	Vector2 *price = malloc(sizeof(Vector2));
 	price->min = min;
 	price->max = max;
 	search->PriceRange = price;
@@ -567,14 +568,13 @@ void search_for_car()
 	// Get user input string
 	fflush(stdin);
 	scanf("%d %d", &min, &max);
-	struct Vector2 *mileage = malloc(sizeof(struct Vector2));
+	Vector2 *mileage = malloc(sizeof(Vector2));
 	price->min = min;
 	price->max = max;
 	search->RangeOfMileage = mileage;
 
 	print_search_result(call_search_car(search));
 }
-	
 
 void print_branch_cars()
 {
@@ -583,14 +583,14 @@ void print_branch_cars()
 
 	for (unsigned int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
 	{
-		struct Branch *branch = dealershipPtr->Branches[l];
+		Branch *branch = dealershipPtr->Branches[l];
 		if (branch != NULL)
 		{
 			printf("  Branch %s Cars \n", branch->name);
 			printf("--------------------------------\n");
 			for (unsigned int i = 0; i < sizeof(branch->cars) / sizeof(branch->cars[0]); i++)
 			{
-				struct Car *car = branch->cars[i];
+				Car *car = branch->cars[i];
 				if (car != NULL)
 				{
 					printf(" - Model: %s \n", car->Model);
@@ -634,7 +634,7 @@ void print_branches()
 
 	for (unsigned int i = 0; i < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); i++)
 	{
-		struct Branch *branch = dealershipPtr->Branches[i];
+		Branch *branch = dealershipPtr->Branches[i];
 		// printf("Car pointer is: %p\n", (void *) car);
 		if (branch != NULL)
 		{
@@ -675,8 +675,8 @@ void add_car()
 		input[ln] = '\0';
 	}
 
-	struct Branch *branch = dealershipPtr->Branches[branch_index];
-	struct Car *car = branch->cars[car_index];
+	Branch *branch = dealershipPtr->Branches[branch_index];
+	Car *car = branch->cars[car_index];
 
 	if (car != NULL)
 	{
@@ -702,7 +702,7 @@ void change_car()
 	printf("--------------------------------\n");
 	for (unsigned int i = 0; i < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); i++)
 	{
-		struct Branch *branch = dealershipPtr->Branches[i];
+		Branch *branch = dealershipPtr->Branches[i];
 		// printf("Car pointer is: %p\n", (void *) car);
 		if (branch != NULL)
 		{
@@ -721,13 +721,13 @@ void change_car()
 	clear_console();
 	printf("Pick car slot");
 	printf("--------------------------------\n");
-	struct Branch *branch = dealershipPtr->Branches[branch_index];
+	Branch *branch = dealershipPtr->Branches[branch_index];
 	if (branch != NULL)
 	{
 		printf("\nCar matches in branch %s \n", branch->name);
 		for (unsigned int i = 0; i < sizeof(branch->cars) / sizeof(branch->cars[0]); i++)
 		{
-			struct Car *car = branch->cars[i];
+			Car *car = branch->cars[i];
 			if (car != NULL)
 			{
 				printf("%d) [%s] \n", i + 1, car->Model);
@@ -781,8 +781,8 @@ void call_remove_car(unsigned int slot, unsigned int branch, struct Car *car)
 // back end to update inventory once use buy a car and update sales
 void call_sell_car(unsigned int slot, unsigned int branch)
 {
-	struct Car *car = dealershipPtr->Branches[branch]->cars[slot];
-	struct Branch *branchRef = dealershipPtr->Branches[branch];
+	Car *car = dealershipPtr->Branches[branch]->cars[slot];
+	Branch *branchRef = dealershipPtr->Branches[branch];
 
 	if (strcmp(car->Manufacturer, "honda") == 0 && strcmp(branchRef->name, "Canada - Ottawa") == 0)
 	{
@@ -799,10 +799,6 @@ void call_sell_car(unsigned int slot, unsigned int branch)
 
 	dealershipPtr->Branches[branch]->cars[slot] = NULL;
 }
-
-
-
-
 
 /*
 	Transfare car from branch to another
