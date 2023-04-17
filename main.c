@@ -207,8 +207,8 @@ struct SearchModel
 	char *CarModel;
 	char *CarManufacturer;
 	enum ConditionType CarCondition;
-	struct Vector2 RangeOfMileage;
-	struct Vector2 PriceRange;
+	struct Vector2 *RangeOfMileage;
+	struct Vector2 *PriceRange;
 	char *Color;
 };
 
@@ -444,14 +444,82 @@ struct Branch *create_costa_rica_branch()
 	return branch;
 }
 
+bool inRange(int price, int mileage, struct SearchModel *search)
+{
+	return price > search->PriceRange->min && price < search->PriceRange->max || mileage > search->RangeOfMileage->min && mileage < search->RangeOfMileage->max;
+}
+
+// Search for the car based on use input
+struct SearchResult *call_search_car(struct SearchModel *search)
+{
+	// search result counter and data holder
+	int resultCount = 0;
+	struct SearchResult *result = malloc(sizeof(struct SearchResult));
+
+	for (int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
+	{
+		if (resultCount > 4)
+			break;
+
+		struct Branch *branch = dealershipPtr->Branches[l];
+		if (branch != NULL)
+		{
+			printf("\nCar matches in branch %s \n", branch->name);
+			for (int i = 0; i < sizeof(branch->cars) / sizeof(branch->cars[0]); i++)
+			{
+				if (resultCount > 4)
+					break;
+
+				struct Car *car = branch->cars[i];
+				if (car != NULL)
+				{
+					if (strstr(car->Model, search->CarModel) != NULL || strcmp(car->Manufacturer, search->CarManufacturer) == 0 || car->Condition == search->CarCondition || inRange(car->price, car->Mileage, search))
+					{
+						result->car[resultCount] = car;
+						resultCount++;
+					}else{
+						result->car[resultCount] = NULL;
+					}
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
+void print_search_result(struct SearchResult *result)
+{
+	clear_console();
+
+	printf("Search result\n");
+	printf("--------------------------------\n");
+
+	for (int l = 0; l < sizeof(result->car) / sizeof(result->car[0]); l++)
+	{
+		if(result->car != NULL)
+		{
+			printf("Model: %s\n", result->car[l]->Model);
+			printf("Manufacturer: %s\n", result->car[l]->Manufacturer);
+			printf("Price: %d\n", result->car[l]->price);
+			printf("Mileage: %d\n", result->car[l]->Mileage);
+		}
+		printf("--------------------------------\n");
+	}
+	printf("0) Back\n");
+	int action;
+	scanf("%d", &action);
+}
+
 void search_for_car()
 {
 	clear_console();
 
+	struct SearchModel *search = malloc(sizeof(struct SearchModel));
+
 	printf("Search for car\n");
 	printf("--------------------------------\n");
-	printf("Enter car model: ");
-
+	printf("\nEnter car model: ");
 	// Get user input string
 	fflush(stdin);
 	char input[24];
@@ -461,38 +529,52 @@ void search_for_car()
 	{
 		input[ln] = '\0';
 	}
-
 	// Convert input string to lowercase
 	for (int i = 0; i < strlen(input); i++)
 	{
 		input[i] = tolower(input[i]);
 	}
+	search->CarModel = input;
 
-	for (int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
+
+	printf("\nEnter car manufacturer: ");
+	// Get user input string
+	fflush(stdin);
+	fgets(input, 24, stdin);
+	ln = strlen(input) - 1;
+	if (input[ln] == '\n')
 	{
-		struct Branch *branch = dealershipPtr->Branches[l];
-		if (branch != NULL)
-		{
-			printf("\nCar matches in branch %s \n", branch->name);
-			for (int i = 0; i < sizeof(branch->cars) / sizeof(branch->cars[0]); i++)
-			{
-				struct Car *car = branch->cars[i];
-				if (car != NULL)
-				{
-					if (strstr(car->Model, input) != NULL)
-						printf(" - Car Model: %s \n", car->Model);
-				}
-			}
-		}
+		input[ln] = '\0';
 	}
+	// Convert input string to lowercase
+	for (int i = 0; i < strlen(input); i++)
+	{
+		input[i] = tolower(input[i]);
+	}
+	search->CarManufacturer = input;
 
-	printf("--------------------------------\n");
-	printf("0) Back\n");
-	int action;
-	scanf("%d", &action);
+	printf("\nEnter car price range: \n");
+	// Get user input string
+	fflush(stdin);
+	int min, max;
+	scanf("%d %d", &min, &max);
+	struct Vector2 *price = malloc(sizeof(struct Vector2));
+	price->min = min;
+	price->max = max;
+	search->PriceRange = price;
 
-	// free(input);
+	printf("\nEnter car mileage range: \n");
+	// Get user input string
+	fflush(stdin);
+	scanf("%d %d", &min, &max);
+	struct Vector2 *mileage = malloc(sizeof(struct Vector2));
+	price->min = min;
+	price->max = max;
+	search->RangeOfMileage = mileage;
+
+	print_search_result(call_search_car(search));
 }
+	
 
 void print_branch_cars()
 {
@@ -718,47 +800,9 @@ void call_sell_car(int slot, int branch)
 	dealershipPtr->Branches[branch]->cars[slot] = NULL;
 }
 
-bool inRange(int price, int mileage, struct SearchModel *search)
-{
-	return price > search->PriceRange.min && price < search->PriceRange.max || mileage > search->RangeOfMileage.min && mileage < search->RangeOfMileage.max;
-}
 
-// Search for the car based on use input
-struct SearchResult *call_search_car(struct SearchModel *search)
-{
-	// search result counter and data holder
-	int resultCount = 0;
-	struct SearchResult *result = malloc(sizeof(struct SearchResult));
 
-	for (int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
-	{
-		if (resultCount > 4)
-			break;
 
-		struct Branch *branch = dealershipPtr->Branches[l];
-		if (branch != NULL)
-		{
-			printf("\nCar matches in branch %s \n", branch->name);
-			for (int i = 0; i < sizeof(branch->cars) / sizeof(branch->cars[0]); i++)
-			{
-				if (resultCount > 4)
-					break;
-
-				struct Car *car = branch->cars[i];
-				if (car != NULL)
-				{
-					if (strcmp(car->Model, search->CarModel) == 0 || strcmp(car->Manufacturer, search->CarManufacturer) == 0 || car->Condition == search->CarCondition || inRange(car->price, car->Mileage, search))
-					{
-						result->car[resultCount] = car;
-						resultCount++;
-					}
-				}
-			}
-		}
-	}
-
-	return result;
-}
 
 /*
 	Transfare car from branch to another
