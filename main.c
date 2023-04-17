@@ -100,8 +100,8 @@ struct Car
 	char *Manufacturer;
 	bool isColorUpgraded;
 	char *Color;
-	int Mileage;
-	int price;
+	unsigned int Mileage;
+	unsigned int price;
 	bool isTransmissionUpgraded;
 	enum TransmissionType Transmission;
 	struct EngineData *Engine;
@@ -109,7 +109,7 @@ struct Car
 	struct ExteriorData *Exterior;
 	struct SteatingAndTrimData *SeatingAndTrim;
 	bool Airbags;
-	int AirbagsCount;
+	unsigned int AirbagsCount;
 	struct FuelEconomyData *FuelEconomy;
 	bool Hybrid;
 	bool FullyElectrified;
@@ -138,11 +138,11 @@ struct Car
 struct FinanceManagerData
 {
 	char *FirstName, LastName;
-	int PhoneNumber;
-	int CellPhoneNumber;
+	unsigned int PhoneNumber;
+	unsigned int CellPhoneNumber;
 	char *Address;
 	char *DateOfEmployment;
-	int YearsOfExperience;
+	unsigned int YearsOfExperience;
 };
 
 /*
@@ -151,12 +151,12 @@ struct FinanceManagerData
 struct GeneralManagerData
 {
 
-	int PhoneNumber;
-	int CellPhoneNumber;
+	unsigned int PhoneNumber;
+	unsigned int CellPhoneNumber;
 	char *Address;
 	char *Email;
 	char *DateOfEmployment;
-	int YearsOfExperience;
+	unsigned int YearsOfExperience;
 };
 
 /*
@@ -177,7 +177,7 @@ struct Branch
 	// confidential information
 	struct GeneralManagerData *GeneralManager;
 	struct FinaceManagerData *FinaceManager;
-	int AvailableCars;
+	unsigned int AvailableCars;
 	char *AvailableCarsInformation;
 };
 
@@ -188,7 +188,7 @@ struct Dealership
 {
 	char *name;
 	struct Branch *Branches[5];
-	int Sales;
+	unsigned int Sales;
 };
 
 /*
@@ -196,7 +196,7 @@ struct Dealership
 */
 struct Vector2
 {
-	int min, max;
+	unsigned int min, max;
 };
 
 /*
@@ -215,12 +215,12 @@ struct SearchModel
 struct SearchModel *search;
 struct Dealership dealership;
 struct Dealership *dealershipPtr = &dealership;
-int branch_index;
-int car_index;
-int peso = 18.01;
-int canadianDollar = 1.35;
-int balboa = 1;
-int colon = 533.81;
+unsigned int branch_index;
+unsigned int car_index;
+unsigned int peso = 18.01;
+unsigned int canadianDollar = 1.35;
+unsigned int balboa = 1;
+unsigned int colon = 533.81;
 float currentCurrency = 1;
 
 /*
@@ -251,7 +251,7 @@ void convert_price(enum Currency currency)
 /*
 	Compare two char pointers return 0 if the two texts are similar
 */
-int compare_string(char *first, char *second)
+unsigned int compare_string(char *first, char *second)
 {
 	while (*first == *second)
 	{
@@ -287,7 +287,7 @@ void create_branch_car_list(struct Branch *branch)
 /*
 	Allocate memory for car struct and initialize it with the given args
 */
-struct Car *create_car(char *model, char *manufacturer, char *color, int price, enum TransmissionType transmission, enum ConditionType condition)
+struct Car *create_car(char *model, char *manufacturer, char *color, unsigned int price, enum TransmissionType transmission, enum ConditionType condition)
 {
 	struct Car *car = malloc(sizeof(struct Car));
 	car->Model = model;
@@ -369,7 +369,7 @@ struct Branch *create_mexico_branch()
 
 	// Set branch data
 	branch->name = "Mexico - Mexico City";
-	branch->Address = "Vasco de Quiroga 2109, Santa Fe, Zedec Sta Fé, Álvaro Obregón, 01219 Ciudad de México, CDMX, Mexico";
+	branch->Address = "Vasco de Quiroga 2109, Santa Fe, Zedec Sta Fe, Alvaro Obregon, 01219 Ciudad de Mexico, CDMX, Mexico";
 	branch->PhoneNumber = "+52 55 5081 2300";
 	branch->FaxNumber = "844-528-6611";
 	branch->PostalCode = "00810";
@@ -398,7 +398,7 @@ struct Branch *create_panama_branch()
 
 	// Set branch data
 	branch->name = "Panama - Panama City";
-	branch->Address = "Vía Ricardo J. Alfaro, Panamá, Panama";
+	branch->Address = "Via Ricardo J. Alfaro, Panama, Panama";
 	branch->PhoneNumber = "+507 392-9326";
 	branch->FaxNumber = "507-5830";
 	branch->PostalCode = "0801";
@@ -426,8 +426,8 @@ struct Branch *create_costa_rica_branch()
 	create_branch_car_list(branch);
 
 	// Set branch data
-	branch->name = "Costa Rica - San José";
-	branch->Address = "Vía Ricardo J. Alfaro, Panamá, Panama";
+	branch->name = "Costa Rica - San Jose";
+	branch->Address = "Via Ricardo J. Alfaro, Panama, Panama";
 	branch->PhoneNumber = "+507 392-9326";
 	branch->FaxNumber = "339-581";
 	branch->PostalCode = "94088";
@@ -444,7 +444,7 @@ struct Branch *create_costa_rica_branch()
 	return branch;
 }
 
-bool inRange(int price, int mileage, struct SearchModel *search)
+bool inRange(unsigned int price, unsigned int mileage, struct SearchModel *search)
 {
 	return price > search->PriceRange->min && price < search->PriceRange->max || mileage > search->RangeOfMileage->min && mileage < search->RangeOfMileage->max;
 }
@@ -453,10 +453,10 @@ bool inRange(int price, int mileage, struct SearchModel *search)
 struct SearchResult *call_search_car(struct SearchModel *search)
 {
 	// search result counter and data holder
-	int resultCount = 0;
+	unsigned int resultCount = 0;
 	struct SearchResult *result = malloc(sizeof(struct SearchResult));
 
-	for (int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
+	for (unsigned int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
 	{
 		if (resultCount > 4)
 			break;
@@ -465,7 +465,7 @@ struct SearchResult *call_search_car(struct SearchModel *search)
 		if (branch != NULL)
 		{
 			printf("\nCar matches in branch %s \n", branch->name);
-			for (int i = 0; i < sizeof(branch->cars) / sizeof(branch->cars[0]); i++)
+			for (unsigned int i = 0; i < sizeof(branch->cars) / sizeof(branch->cars[0]); i++)
 			{
 				if (resultCount > 4)
 					break;
@@ -495,7 +495,7 @@ void print_search_result(struct SearchResult *result)
 	printf("Search result\n");
 	printf("--------------------------------\n");
 
-	for (int l = 0; l < sizeof(result->car) / sizeof(result->car[0]); l++)
+	for (unsigned int l = 0; l < sizeof(result->car) / sizeof(result->car[0]); l++)
 	{
 		if(result->car != NULL)
 		{
@@ -507,7 +507,7 @@ void print_search_result(struct SearchResult *result)
 		printf("--------------------------------\n");
 	}
 	printf("0) Back\n");
-	int action;
+	unsigned int action;
 	scanf("%d", &action);
 }
 
@@ -530,7 +530,7 @@ void search_for_car()
 		input[ln] = '\0';
 	}
 	// Convert input string to lowercase
-	for (int i = 0; i < strlen(input); i++)
+	for (unsigned int i = 0; i < strlen(input); i++)
 	{
 		input[i] = tolower(input[i]);
 	}
@@ -547,7 +547,7 @@ void search_for_car()
 		input[ln] = '\0';
 	}
 	// Convert input string to lowercase
-	for (int i = 0; i < strlen(input); i++)
+	for (unsigned int i = 0; i < strlen(input); i++)
 	{
 		input[i] = tolower(input[i]);
 	}
@@ -556,7 +556,7 @@ void search_for_car()
 	printf("\nEnter car price range: \n");
 	// Get user input string
 	fflush(stdin);
-	int min, max;
+	unsigned int min, max;
 	scanf("%d %d", &min, &max);
 	struct Vector2 *price = malloc(sizeof(struct Vector2));
 	price->min = min;
@@ -579,16 +579,16 @@ void search_for_car()
 void print_branch_cars()
 {
 	clear_console();
-	int input;
+	unsigned int input;
 
-	for (int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
+	for (unsigned int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
 	{
 		struct Branch *branch = dealershipPtr->Branches[l];
 		if (branch != NULL)
 		{
 			printf("  Branch %s Cars \n", branch->name);
 			printf("--------------------------------\n");
-			for (int i = 0; i < sizeof(branch->cars) / sizeof(branch->cars[0]); i++)
+			for (unsigned int i = 0; i < sizeof(branch->cars) / sizeof(branch->cars[0]); i++)
 			{
 				struct Car *car = branch->cars[i];
 				if (car != NULL)
@@ -627,12 +627,12 @@ void print_branch_cars()
 void print_branches()
 {
 	clear_console();
-	int input;
+	unsigned int input;
 
 	printf("Branches \n");
 	printf("--------------------------------\n");
 
-	for (int i = 0; i < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); i++)
+	for (unsigned int i = 0; i < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); i++)
 	{
 		struct Branch *branch = dealershipPtr->Branches[i];
 		// printf("Car pointer is: %p\n", (void *) car);
@@ -700,7 +700,7 @@ void change_car()
 	clear_console();
 	printf("Pick branch\n");
 	printf("--------------------------------\n");
-	for (int i = 0; i < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); i++)
+	for (unsigned int i = 0; i < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); i++)
 	{
 		struct Branch *branch = dealershipPtr->Branches[i];
 		// printf("Car pointer is: %p\n", (void *) car);
@@ -711,7 +711,7 @@ void change_car()
 	}
 	printf("--------------------------------\n");
 
-	int input;
+	unsigned int input;
 	printf("Your input: ");
 	scanf("%d", &input);
 
@@ -725,7 +725,7 @@ void change_car()
 	if (branch != NULL)
 	{
 		printf("\nCar matches in branch %s \n", branch->name);
-		for (int i = 0; i < sizeof(branch->cars) / sizeof(branch->cars[0]); i++)
+		for (unsigned int i = 0; i < sizeof(branch->cars) / sizeof(branch->cars[0]); i++)
 		{
 			struct Car *car = branch->cars[i];
 			if (car != NULL)
@@ -767,19 +767,19 @@ void change_car()
 // Backend calls
 
 // Add car to selected branch
-void call_add_car(int slot, int branch, struct Car *car)
+void call_add_car(unsigned int slot, unsigned int branch, struct Car *car)
 {
 	dealershipPtr->Branches[branch]->cars[slot] = car;
 }
 
 // Remove car from selected branch
-void call_remove_car(int slot, int branch, struct Car *car)
+void call_remove_car(unsigned int slot, unsigned int branch, struct Car *car)
 {
 	dealershipPtr->Branches[branch]->cars[slot] = NULL;
 }
 
 // back end to update inventory once use buy a car and update sales
-void call_sell_car(int slot, int branch)
+void call_sell_car(unsigned int slot, unsigned int branch)
 {
 	struct Car *car = dealershipPtr->Branches[branch]->cars[slot];
 	struct Branch *branchRef = dealershipPtr->Branches[branch];
@@ -808,7 +808,7 @@ void call_sell_car(int slot, int branch)
 	Transfare car from branch to another
 	add transfer expenses to the sales
 */
-void call_transfare_car(int slot, int branch, int to_slot, int to_branch)
+void call_transfare_car(unsigned int slot, unsigned int branch, unsigned int to_slot, unsigned int to_branch)
 {
 	struct Car *car = dealershipPtr->Branches[branch]->cars[slot];
 	dealershipPtr->Branches[branch]->cars[slot] = NULL;
@@ -830,7 +830,7 @@ void main_menu()
 	printf("\n0) Exit\n");
 	printf("--------------------------------\n");
 
-	int input;
+	unsigned int input;
 	printf("Your input: ");
 	scanf("%d", &input);
 
