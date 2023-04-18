@@ -822,6 +822,12 @@ void call_sell_car(unsigned int slot, unsigned int branchIndex)
 	Branch *branch = dealership->Branches[branchIndex];
 	Car *car = branch->cars[slot];
 
+	if(branch == NULL)
+		return;
+
+	if(car == NULL)
+		return;
+
 	if (strcmp(car->Manufacturer, "honda") == 0 && strcmp(branch->name, "Canada - Ottawa") == 0)
 	{
 		dealership->Sales += car->price * 0.98;
@@ -1004,17 +1010,19 @@ void print_transfare_car()
 	printf("Type branch number and submit then type car index and submit\n");
 	printf("Then select where to transfare the car\n");
 	unsigned int branchIndex2, carIndex2;
-	scanf("%d%d", &branchIndex, &carIndex);
+	scanf("%d%d", &branchIndex2, &carIndex2);
+	branchIndex2 -= 1;
+	carIndex2 -= 1;
 
-	Branch *branch2 = dealership->Branches[branchIndex];
-	if (branch == NULL || branchIndex > 4)
+	Branch *branch2 = dealership->Branches[branchIndex2];
+	if (branch == NULL || branchIndex2 > 4)
 	{
 		error = "Invalid branch index";
 		return;
 	}
 
-	Car *car2 = branch->cars[carIndex];
-	if (car == NULL || carIndex > 9)
+	Car *car2 = branch->cars[carIndex2];
+	if (car == NULL || carIndex2 > 9)
 	{
 		error = "Invalid car index";
 		return;
