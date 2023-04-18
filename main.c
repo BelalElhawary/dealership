@@ -5,7 +5,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-// define clear console based on platform
+// define clear console method based on platform
 void clear_console()
 {
 #ifdef _WIN32
@@ -857,6 +857,9 @@ void call_transfare_car(unsigned int slot, unsigned int branch, unsigned int to_
 	dealership->Sales -= 1000;
 }
 
+/*
+	print full car data for user
+*/
 void print_full_car_data()
 {
 	clear_console();
@@ -943,6 +946,9 @@ void print_full_car_data()
 	scanf("%d", &input);
 }
 
+/*
+	print ui for user to sell car from selected branch
+*/
 void print_sell_car()
 {
 	clear_console();
@@ -980,6 +986,9 @@ void print_sell_car()
 	scanf("%d", &input);
 }
 
+/*
+	print ui for use to transfare car from branch to another
+*/
 void print_transfare_car()
 {
 	clear_console();
@@ -1039,6 +1048,10 @@ void print_transfare_car()
 	scanf("%d", &input);
 }
 
+
+/*
+	print dealership sales in all supported currency
+*/
 void print_currency()
 {
 	clear_console();
