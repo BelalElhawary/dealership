@@ -198,7 +198,7 @@ typedef struct
 {
 	char *name;
 	Branch *Branches[5];
-	unsigned int Sales;
+	float Sales;
 } Dealership;
 
 /*
@@ -227,10 +227,10 @@ SearchModel *search;
 Dealership *dealership;
 unsigned int branch_index;
 unsigned int car_index;
-unsigned int peso = 18.01;
-unsigned int canadianDollar = 1.35;
-unsigned int balboa = 1;
-unsigned int colon = 533.81;
+float peso = 18.01;
+float canadianDollar = 1.35;
+float balboa = 1;
+float colon = 533.81;
 float currentCurrency = 1;
 
 /*
@@ -1039,12 +1039,30 @@ void print_transfare_car()
 	scanf("%d", &input);
 }
 
+void print_currency()
+{
+	clear_console();
+
+	printf("Branch sales\n");
+	printf("--------------------------------\n\n");
+	printf("Usd : %.2f\n", dealership->Sales);
+	printf("Canadian dollar : %.2f\n", dealership->Sales * canadianDollar);
+	printf("Balboa : %.2f\n", dealership->Sales * balboa);
+	printf("Peso : %.2f\n", dealership->Sales * peso);
+	printf("Colon : %.2f\n", dealership->Sales * colon);
+	printf("--------------------------------\n");
+
+	unsigned int input;
+	printf("0) Back\n");
+	scanf("%d", &input);
+}
+
 // main menu
 void main_menu()
 {
 	clear_console();
 
-	printf("Welcome to %s  (store sales = $%d)\n", dealership->name, dealership->Sales);
+	printf("Welcome to %s  (store sales = $%.2f)\n", dealership->name, dealership->Sales);
 	printf("--------------------------------\n");
 	printf("1) Add or change Car\n");
 	printf("2) Search for car\n");
@@ -1053,6 +1071,7 @@ void main_menu()
 	printf("5) Sell a car\n");
 	printf("6) Transfare a car\n");
 	printf("7) Print full car data\n");
+	printf("8) Print sales in all currency\n");
 	printf("\n0) Exit\n");
 	printf("--------------------------------\n");
 
@@ -1084,6 +1103,9 @@ void main_menu()
 		break;
 	case 7:
 		print_full_car_data();
+		break;
+	case 8:
+		print_currency();
 		break;
 	default:
 		return;
