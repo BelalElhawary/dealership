@@ -15,6 +15,14 @@ void clear_console()
 #endif
 }
 
+char *bool_to_string(bool value)
+{
+	if(value)
+		return "Yes";
+	else
+		return "No";
+}
+
 // Car information data holder
 
 // enum to spicify wich type of currency (supported by program)
@@ -48,14 +56,10 @@ typedef enum
 	Both
 } ConditionType;
 
-// struct to hold search for car result contains 5 cars in array of struct Car
-typedef struct
-{
-	Car *car[5];
-} SearchResult;
+
 
 // struct to hold Engine data
-typedef struct
+typedef struct 
 {
 	char *name;
 } EngineData;
@@ -77,7 +81,7 @@ typedef struct
 typedef struct
 {
 	char *name;
-} SteatingAndTrimData;
+} SeatingAndTrimData;
 
 // struct to hold Dimension data
 typedef struct
@@ -103,14 +107,14 @@ typedef struct
 	unsigned int Mileage;
 	unsigned int price;
 	bool isTransmissionUpgraded;
-	enum TransmissionType Transmission;
-	struct EngineData *Engine;
-	struct ChassisData *Chassis;
-	struct ExteriorData *Exterior;
-	struct SteatingAndTrimData *SeatingAndTrim;
+	TransmissionType Transmission;
+	EngineData *Engine;
+	ChassisData *Chassis;
+	ExteriorData *Exterior;
+	SeatingAndTrimData *SeatingAndTrim;
 	bool Airbags;
 	unsigned int AirbagsCount;
-	struct FuelEconomyData *FuelEconomy;
+	FuelEconomyData *FuelEconomy;
 	bool Hybrid;
 	bool FullyElectrified;
 	bool isAutomaticParkingAssistanceUpgraded;
@@ -118,7 +122,7 @@ typedef struct
 	bool NightVisionAssistance;
 	bool isCruiseControl;
 	bool CruiseControl;
-	enum DrivingSystemType DrivingSystem;
+	DrivingSystemType DrivingSystem;
 	bool HillAssist;
 	bool isTirePressureMonitoringSystemUpgreded;
 	bool TirePressureMonitoringSystem;
@@ -128,9 +132,15 @@ typedef struct
 	bool BlindSpotWarningSensors;
 	bool SeatHeater;
 	bool SteeringHeater;
-	enum ConditionType Condition;
+	ConditionType Condition;
 	char *countries[5];
 } Car;
+
+// struct to hold search for car result contains 5 cars in array of struct Car
+typedef struct
+{
+	Car *car[5];
+} SearchResult;
 
 /*
 	struct to hold FinanceManager data
@@ -206,15 +216,15 @@ typedef struct
 {
 	char *CarModel;
 	char *CarManufacturer;
-	enum ConditionType CarCondition;
+	ConditionType CarCondition;
 	Vector2 *RangeOfMileage;
 	Vector2 *PriceRange;
 	char *Color;
 } SearchModel;
 
+char *error = NULL;
 SearchModel *search;
-Dealership dealership;
-Dealership *dealershipPtr = &dealership;
+Dealership *dealership;
 unsigned int branch_index;
 unsigned int car_index;
 unsigned int peso = 18.01;
@@ -226,7 +236,7 @@ float currentCurrency = 1;
 /*
 	Convert the program currency usd to branches currency
 */
-void convert_price(enum Currency currency)
+void convert_price(Currency currency)
 {
 	switch (currency)
 	{
@@ -290,12 +300,40 @@ void create_branch_car_list(Branch *branch)
 Car *create_car(char *model, char *manufacturer, char *color, unsigned int price, TransmissionType transmission, ConditionType condition)
 {
 	Car *car = malloc(sizeof(Car));
+	
+	srand(12154842);
 	car->Model = model;
 	car->Color = color;
+	car->isColorUpgraded = rand() & 1;
 	car->Manufacturer = manufacturer;
+	car->Mileage = 0;
 	car->price = price;
+	car->isTransmissionUpgraded = rand() & 1;
 	car->Transmission = transmission;
+	car->Engine = NULL;
+	car->Chassis = NULL;
+	car->Exterior = NULL;
+	car->SeatingAndTrim = NULL;
+	car->Airbags = rand() & 1;
+	car->AirbagsCount = 6;
+	car->FuelEconomy = NULL;
+	car->Hybrid = rand() & 1;
+	car->FullyElectrified = rand() & 1;
+	car->isAutomaticParkingAssistanceUpgraded = rand() & 1;
+	car->AutomaticParkingAssistance = rand() & 1;
+	car->NightVisionAssistance = rand() & 1;
+	car->isCruiseControl = rand() & 1;
+	car->DrivingSystem = TwoWheelDrive;
+	car->HillAssist = rand() & 1;
+	car->isTirePressureMonitoringSystemUpgreded = rand() & 1;
+	car->VoiceCommand = rand() & 1;
+	car->LaneChangeIndicator = rand() & 1;
+	car->ForwardCollisionWarningSensor = rand() & 1;
+	car->BlindSpotWarningSensors = rand() & 1;
+	car->SeatHeater = rand() & 1;
+	car->SteeringHeater = rand() & 1;
 	car->Condition = condition;
+	
 	return car;
 }
 
@@ -456,12 +494,12 @@ SearchResult *call_search_car(SearchModel *search)
 	unsigned int resultCount = 0;
 	SearchResult *result = malloc(sizeof(SearchResult));
 
-	for (unsigned int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
+	for (unsigned int l = 0; l < sizeof(dealership->Branches) / sizeof(dealership->Branches[0]); l++)
 	{
 		if (resultCount > 4)
 			break;
 
-		Branch *branch = dealershipPtr->Branches[l];
+		Branch *branch = dealership->Branches[l];
 		if (branch != NULL)
 		{
 			printf("\nCar matches in branch %s \n", branch->name);
@@ -581,9 +619,9 @@ void print_branch_cars()
 	clear_console();
 	unsigned int input;
 
-	for (unsigned int l = 0; l < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); l++)
+	for (unsigned int l = 0; l < sizeof(dealership->Branches) / sizeof(dealership->Branches[0]); l++)
 	{
-		Branch *branch = dealershipPtr->Branches[l];
+		Branch *branch = dealership->Branches[l];
 		if (branch != NULL)
 		{
 			printf("  Branch %s Cars \n", branch->name);
@@ -632,9 +670,9 @@ void print_branches()
 	printf("Branches \n");
 	printf("--------------------------------\n");
 
-	for (unsigned int i = 0; i < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); i++)
+	for (unsigned int i = 0; i < sizeof(dealership->Branches) / sizeof(dealership->Branches[0]); i++)
 	{
-		Branch *branch = dealershipPtr->Branches[i];
+		Branch *branch = dealership->Branches[i];
 		// printf("Car pointer is: %p\n", (void *) car);
 		if (branch != NULL)
 		{
@@ -675,7 +713,7 @@ void add_car()
 		input[ln] = '\0';
 	}
 
-	Branch *branch = dealershipPtr->Branches[branch_index];
+	Branch *branch = dealership->Branches[branch_index];
 	Car *car = branch->cars[car_index];
 
 	if (car != NULL)
@@ -700,9 +738,9 @@ void change_car()
 	clear_console();
 	printf("Pick branch\n");
 	printf("--------------------------------\n");
-	for (unsigned int i = 0; i < sizeof(dealershipPtr->Branches) / sizeof(dealershipPtr->Branches[0]); i++)
+	for (unsigned int i = 0; i < sizeof(dealership->Branches) / sizeof(dealership->Branches[0]); i++)
 	{
-		Branch *branch = dealershipPtr->Branches[i];
+		Branch *branch = dealership->Branches[i];
 		// printf("Car pointer is: %p\n", (void *) car);
 		if (branch != NULL)
 		{
@@ -721,7 +759,7 @@ void change_car()
 	clear_console();
 	printf("Pick car slot");
 	printf("--------------------------------\n");
-	Branch *branch = dealershipPtr->Branches[branch_index];
+	Branch *branch = dealership->Branches[branch_index];
 	if (branch != NULL)
 	{
 		printf("\nCar matches in branch %s \n", branch->name);
@@ -767,37 +805,37 @@ void change_car()
 // Backend calls
 
 // Add car to selected branch
-void call_add_car(unsigned int slot, unsigned int branch, struct Car *car)
+void call_add_car(unsigned int slot, unsigned int branch, Car *car)
 {
-	dealershipPtr->Branches[branch]->cars[slot] = car;
+	dealership->Branches[branch]->cars[slot] = car;
 }
 
 // Remove car from selected branch
-void call_remove_car(unsigned int slot, unsigned int branch, struct Car *car)
+void call_remove_car(unsigned int slot, unsigned int branch, Car *car)
 {
-	dealershipPtr->Branches[branch]->cars[slot] = NULL;
+	dealership->Branches[branch]->cars[slot] = NULL;
 }
 
 // back end to update inventory once use buy a car and update sales
-void call_sell_car(unsigned int slot, unsigned int branch)
+void call_sell_car(unsigned int slot, unsigned int branchIndex)
 {
-	Car *car = dealershipPtr->Branches[branch]->cars[slot];
-	Branch *branchRef = dealershipPtr->Branches[branch];
+	Branch *branch = dealership->Branches[branchIndex];
+	Car *car = branch->cars[slot];
 
-	if (strcmp(car->Manufacturer, "honda") == 0 && strcmp(branchRef->name, "Canada - Ottawa") == 0)
+	if (strcmp(car->Manufacturer, "honda") == 0 && strcmp(branch->name, "Canada - Ottawa") == 0)
 	{
-		dealershipPtr->Sales += car->price * 0.98f * currentCurrency;
+		dealership->Sales += car->price * 0.98;
 	}
-	else if (strcmp(car->Manufacturer, "volvo") == 0 && strcmp(branchRef->name, "Mexico - Mexico City") == 0 && car->price > 60000)
+	else if (strcmp(car->Manufacturer, "volvo") == 0 && strcmp(branch->name, "Mexico - Mexico City") == 0 && car->price > 60000)
 	{
-		dealershipPtr->Sales += car->price * 0.97f * currentCurrency;
+		dealership->Sales += car->price * 0.97;
 	}
 	else
 	{
-		dealershipPtr->Sales += car->price * 0.97f * currentCurrency;
+		dealership->Sales += car->price;
 	}
 
-	dealershipPtr->Branches[branch]->cars[slot] = NULL;
+	dealership->Branches[branchIndex]->cars[slot] = NULL;
 }
 
 /*
@@ -806,10 +844,190 @@ void call_sell_car(unsigned int slot, unsigned int branch)
 */
 void call_transfare_car(unsigned int slot, unsigned int branch, unsigned int to_slot, unsigned int to_branch)
 {
-	struct Car *car = dealershipPtr->Branches[branch]->cars[slot];
-	dealershipPtr->Branches[branch]->cars[slot] = NULL;
-	dealershipPtr->Branches[to_branch]->cars[to_slot] = car;
-	dealershipPtr->Sales -= 1000 * currentCurrency;
+	Car *car = dealership->Branches[branch]->cars[slot];
+	dealership->Branches[branch]->cars[slot] = NULL;
+	dealership->Branches[to_branch]->cars[to_slot] = car;
+	dealership->Sales -= 1000;
+}
+
+void print_full_car_data()
+{
+	clear_console();
+
+	printf("Print car data\n");
+	printf("--------------------------------\n\n");
+	printf("We have 5 branches with 10 cars in each\n");
+	printf("Type branch number and submit then type car index and submit\n");
+	unsigned int branchIndex, carIndex;
+	scanf("%d%d", &branchIndex, &carIndex);
+
+	branchIndex -= 1;
+	carIndex -= 1;
+
+	Branch *branch = dealership->Branches[branchIndex];
+	if (branch == NULL || branchIndex > 4)
+	{
+		error = "Invalid branch index";
+		return;
+	}
+
+	Car *car = branch->cars[carIndex];
+	if (car == NULL || carIndex > 9)
+	{
+		error = "Invalid car index";
+		return;
+	}
+
+	printf("\n Model: %s \n", car->Model);
+	printf(" Manufacturer: %s \n", car->Manufacturer);
+	
+	printf(" Color: %s \n Color upgradable: %s\n", car->Color, bool_to_string(car->isColorUpgraded));
+	printf(" Mileage: %d \n", car->Mileage);
+	printf(" Price: $%d \n", car->price);
+
+	if (car->Transmission == 0)
+	{
+		printf(" Transmission: Manual \n");
+	}
+	else
+	{
+		printf(" Transmission: Automatic \n");
+	}
+
+	if (car->Condition == 0)
+	{
+		printf(" Condition: Brand new \n");
+	}
+	else
+	{
+		printf(" Condition: Used \n");
+	}
+
+	if (car->DrivingSystem == 0)
+	{
+		printf(" DrivingSystem: Two wheels\n");
+	}
+	else
+	{
+		printf(" DrivingSystem: Four wheels\n");
+	}
+	
+	printf(" Transmission Upgradable: %s \n", bool_to_string(car->isTransmissionUpgraded));
+	printf(" Airbags: %s \n", bool_to_string(car->Airbags));
+	printf(" Hybird: %s \n", bool_to_string(car->Hybrid));
+	printf(" Fully electrified: %s \n", bool_to_string(car->FullyElectrified));
+	printf(" Automatic parking assistance upgradable: %s \n", bool_to_string(car->isAutomaticParkingAssistanceUpgraded));
+	printf(" Automatic parking assistance: %s \n", bool_to_string(car->AutomaticParkingAssistance));
+	printf(" Night vision assistance: %s \n", bool_to_string(car->NightVisionAssistance));
+	printf(" Curise control upgradable: %s \n", bool_to_string(car->isCruiseControl));
+	printf(" Curise control: %s \n", bool_to_string(car->CruiseControl));
+	printf(" Hill assist: %s \n", bool_to_string(car->HillAssist));
+	printf(" isTirePressureMonitoringSystemUpgredable: %s \n", bool_to_string(car->isTirePressureMonitoringSystemUpgreded));
+	printf(" Tire pressure monitoring system: %s \n", bool_to_string(car->TirePressureMonitoringSystem));
+	printf(" Lane change indicator: %s \n", bool_to_string(car->LaneChangeIndicator));
+	printf(" Blind spot warning sensors: %s \n", bool_to_string(car->BlindSpotWarningSensors));
+	printf(" Seat heater: %s \n", bool_to_string(car->SeatHeater));
+	printf(" Steering heater: %s \n", bool_to_string(car->SteeringHeater));
+
+	printf("--------------------------------\n");
+
+	unsigned int input;
+	printf("0) Back\n");
+	scanf("%d", &input);
+}
+
+void print_sell_car()
+{
+	clear_console();
+
+	printf("Sell car\n");
+	printf("--------------------------------\n\n");
+	printf("We have 5 branches with 10 cars in each\n");
+	printf("Type branch number and submit then type car index and submit\n");
+	unsigned int branchIndex, carIndex;
+	scanf("%d%d", &branchIndex, &carIndex);
+	branchIndex -= 1;
+	carIndex -= 1;
+
+	Branch *branch = dealership->Branches[branchIndex];
+	if (branch == NULL || branchIndex > 4)
+	{
+		error = "Invalid branch index";
+		return;
+	}
+
+	Car *car = branch->cars[carIndex];
+	if (car == NULL || carIndex > 9)
+	{
+		error = "Invalid car index";
+		return;
+	}
+
+	call_sell_car(carIndex, branchIndex);
+	printf("Done.\n");
+
+	printf("--------------------------------\n");
+
+	unsigned int input;
+	printf("0) Back\n");
+	scanf("%d", &input);
+}
+
+void print_transfare_car()
+{
+	clear_console();
+
+	printf("Sell car\n");
+	printf("--------------------------------\n\n");
+	printf("We have 5 branches with 10 cars in each\n");
+	printf("Type branch number and submit then type car index and submit\n");
+	printf("First select the branch and car\n");
+	unsigned int branchIndex, carIndex;
+	scanf("%d%d", &branchIndex, &carIndex);
+	branchIndex -= 1;
+	carIndex -= 1;
+
+	Branch *branch = dealership->Branches[branchIndex];
+	if (branch == NULL || branchIndex > 4)
+	{
+		error = "Invalid branch index";
+		return;
+	}
+
+	Car *car = branch->cars[carIndex];
+	if (car == NULL || carIndex > 9)
+	{
+		error = "Invalid car index";
+		return;
+	}
+
+	printf("Type branch number and submit then type car index and submit\n");
+	printf("Then select where to transfare the car\n");
+	unsigned int branchIndex2, carIndex2;
+	scanf("%d%d", &branchIndex, &carIndex);
+
+	Branch *branch2 = dealership->Branches[branchIndex];
+	if (branch == NULL || branchIndex > 4)
+	{
+		error = "Invalid branch index";
+		return;
+	}
+
+	Car *car2 = branch->cars[carIndex];
+	if (car == NULL || carIndex > 9)
+	{
+		error = "Invalid car index";
+		return;
+	}
+
+	call_transfare_car(carIndex, branchIndex, carIndex2, branchIndex2);
+	printf("Done.\n");
+
+	printf("--------------------------------\n");
+
+	unsigned int input;
+	printf("0) Back\n");
+	scanf("%d", &input);
 }
 
 // main menu
@@ -817,12 +1035,15 @@ void main_menu()
 {
 	clear_console();
 
-	printf("Welcome to %s store\n", dealershipPtr->name);
+	printf("Welcome to %s  (store sales = $%d)\n", dealership->name, dealership->Sales);
 	printf("--------------------------------\n");
 	printf("1) Add or change Car\n");
 	printf("2) Search for car\n");
 	printf("3) Print branches car data\n");
 	printf("4) Print branches data\n");
+	printf("5) Sell a car\n");
+	printf("6) Transfare a car\n");
+	printf("7) Print full car data\n");
 	printf("\n0) Exit\n");
 	printf("--------------------------------\n");
 
@@ -846,6 +1067,15 @@ void main_menu()
 	case 4:
 		print_branches();
 		break;
+	case 5:
+		print_sell_car();
+		break;
+	case 6:
+		print_transfare_car();
+		break;
+	case 7:
+		print_full_car_data();
+		break;
 	default:
 		return;
 	}
@@ -856,12 +1086,15 @@ void main_menu()
 // Application entry point
 int main()
 {
-	dealership.name = "Belal Elhawary";
-	dealershipPtr->Branches[0] = create_usa_branch();
-	dealershipPtr->Branches[1] = create_canada_branch();
-	dealershipPtr->Branches[2] = create_mexico_branch();
-	dealershipPtr->Branches[3] = create_panama_branch();
-	dealershipPtr->Branches[4] = create_costa_rica_branch();
+	dealership = malloc(sizeof(Dealership));
+	dealership->name = "Belal Elhawary";
+	dealership->Sales = 0;
+	dealership->Branches[0] = create_usa_branch();
+	dealership->Branches[1] = create_canada_branch();
+	dealership->Branches[2] = create_mexico_branch();
+	dealership->Branches[3] = create_panama_branch();
+	dealership->Branches[4] = create_costa_rica_branch();
 	main_menu();
+	free(dealership);
 	return 0;
 }
