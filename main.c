@@ -15,6 +15,7 @@ void clear_console()
 #endif
 }
 
+// print bool as Yes and No string
 char *bool_to_string(bool value)
 {
 	if(value)
@@ -23,7 +24,6 @@ char *bool_to_string(bool value)
 		return "No";
 }
 
-// Car information data holder
 
 // enum to spicify wich type of currency (supported by program)
 typedef enum
@@ -95,9 +95,7 @@ typedef struct
 	char *name;
 } FuelEconomyData;
 
-/*
-	struct to hold car data
-*/
+// Car information data holder
 typedef struct
 {
 	char *Model;
