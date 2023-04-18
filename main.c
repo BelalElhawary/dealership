@@ -525,6 +525,7 @@ SearchResult *call_search_car(SearchModel *search)
 		}
 	}
 
+	free(search);
 	return result;
 }
 
