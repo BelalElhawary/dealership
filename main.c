@@ -280,16 +280,9 @@ unsigned int compare_string(char *first, char *second)
 */
 void create_branch_car_list(Branch *branch)
 {
-	branch->cars[0] = NULL;
-	branch->cars[1] = NULL;
-	branch->cars[2] = NULL;
-	branch->cars[3] = NULL;
-	branch->cars[4] = NULL;
-	branch->cars[5] = NULL;
-	branch->cars[6] = NULL;
-	branch->cars[7] = NULL;
-	branch->cars[8] = NULL;
-	branch->cars[9] = NULL;
+	for(int i = 0; i < 10; i++){
+		branch->cars[i] = NULL;
+	}
 }
 
 /*
